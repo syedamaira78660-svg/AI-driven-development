@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI-Driven Development Approach</title>
+<style>
+  :root {
+    --bg: #ffffff;
+    --bg-alt: #f6f7f9;
+    --text: #1c1e21;
+    --text-muted: #57606a;
+    --border: #e2e5e9;
+    --accent: #6d4aff;
+    --accent-soft: #efe9ff;
+    --code-bg: #f0f1f4;
+    --shadow: rgba(20, 20, 40, 0.06);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #14151a;
+      --bg-alt: #1b1d24;
+      --text: #e7e9ee;
+      --text-muted: #9aa3b2;
+      --border: #2b2e37;
+      --accent: #9c85ff;
+      --accent-soft: #2a2440;
+      --code-bg: #20222a;
+      --shadow: rgba(0, 0, 0, 0.35);
+    }
+  }
+
+  * { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.65;
+  }
+
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  .layout {
+    display: flex;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  /* Sidebar / TOC */
+  .sidebar {
+    width: 270px;
+    flex-shrink: 0;
+    padding: 2rem 1.25rem 2rem 1.5rem;
+    position: sticky;
+    top: 0;
+    align-self: flex-start;
+    max-height: 100vh;
+    overflow-y: auto;
+  }
+
+  .sidebar h2 {
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin: 0 0 0.75rem;
+  }
+
+  .sidebar nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .sidebar nav li a {
+    display: block;
+    padding: 0.35rem 0.6rem;
+    border-radius: 6px;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    line-height: 1.3;
+  }
+
+  .sidebar nav li a:hover {
+    background: var(--accent-soft);
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  .toc-toggle {
+    display: none;
+  }
+
+  /* Main content */
+  main {
+    flex: 1;
+    min-width: 0;
+    padding: 2.5rem 2.5rem 6rem;
+    border-left: 1px solid var(--border);
+  }
+
+  .doc-header {
+    margin-bottom: 2rem;
+  }
+
+  .doc-header h1 {
+    font-size: 2.1rem;
+    margin: 0 0 0.4rem;
+  }
+
+  .doc-header p.subtitle {
+    color: var(--text-muted);
+    margin: 0;
+    font-size: 1.02rem;
+  }
+
+  main h1 {
+    font-size: 1.6rem;
+    margin-top: 3rem;
+    margin-bottom: 1rem;
+    padding-top: 0.5rem;
+    scroll-margin-top: 1.5rem;
+  }
+
+  main h1:first-of-type { margin-top: 0; }
+
+  main h2 {
+    font-size: 1.25rem;
+    margin-top: 2rem;
+    margin-bottom: 0.75rem;
+    scroll-margin-top: 1.5rem;
+  }
+
+  main h3 {
+    font-size: 1.05rem;
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+    color: var(--accent);
+    scroll-margin-top: 1.5rem;
+  }
+
+  main h4 {
+    font-size: 0.95rem;
+    margin-top: 1.25rem;
+    margin-bottom: 0.4rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  main p { margin: 0.6rem 0; }
+
+  main ul, main ol {
+    margin: 0.5rem 0;
+    padding-left: 1.4rem;
+  }
+
+  main li { margin: 0.25rem 0; }
+
+  hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 2.5rem 0;
+  }
+
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 1rem 0;
+    font-size: 0.92rem;
+  }
+
+  th, td {
+    border: 1px solid var(--border);
+    padding: 0.6rem 0.8rem;
+    text-align: left;
+    vertical-align: top;
+  }
+
+  th {
+    background: var(--bg-alt);
+    font-weight: 600;
+  }
+
+  tr:nth-child(even) td {
+    background: var(--bg-alt);
+  }
+
+  pre {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+    overflow-x: auto;
+    font-size: 0.88rem;
+    line-height: 1.55;
+  }
+
+  code {
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  }
+
+  .section-block {
+    background: var(--bg-alt);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.25rem 1.5rem;
+    margin: 1rem 0;
+  }
+
+  footer {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+  }
+
+  @media (max-width: 900px) {
+    .layout { flex-direction: column; }
+
+    .sidebar {
+      width: 100%;
+      position: static;
+      max-height: none;
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 1.25rem;
+    }
+
+    .sidebar nav {
+      display: none;
+    }
+
+    .sidebar.open nav {
+      display: block;
+    }
+
+    .toc-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: var(--accent-soft);
+      color: var(--accent);
+      border: none;
+      border-radius: 6px;
+      padding: 0.5rem 0.9rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    main {
+      border-left: none;
+      padding: 1.75rem 1.25rem 4rem;
+    }
+  }
+</style>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar" id="sidebar">
+    <button class="toc-toggle" id="tocToggle" aria-expanded="false">☰ Contents</button>
+    <h2>Contents</h2>
+    <nav>
+      <ul>
+        <li><a href="#overview">Overview</a></li>
+        <li><a href="#vision">Vision</a></li>
+        <li><a href="#guiding-principles">Guiding Principles</a></li>
+        <li><a href="#phase-1">Phase 1 – Prepare the Team</a></li>
+        <li><a href="#phase-2">Phase 2 – Build Knowledge</a></li>
+        <li><a href="#phase-3">Phase 3 – Ticket Quality</a></li>
+        <li><a href="#phase-4">Phase 4 – AI-Assisted Delivery</a></li>
+        <li><a href="#phase-5">Phase 5 – Code Review Evolution</a></li>
+        <li><a href="#phase-6">Phase 6 – Measure Success</a></li>
+        <li><a href="#improvement-loop">Continuous Improvement Loop</a></li>
+        <li><a href="#benefits">Expected Benefits</a></li>
+        <li><a href="#risks">Risks and Mitigations</a></li>
+        <li><a href="#success-criteria">Success Criteria</a></li>
+        <li><a href="#conclusion">Conclusion</a></li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main>
+    <div class="doc-header">
+      <h1 style="margin-top:0;">AI-Driven Development Approach</h1>
+      <p class="subtitle">A phased approach for adopting AI-driven software development across the engineering organization.</p>
+    </div>
+
+    <h1 id="overview">Overview</h1>
+    <p>This document outlines a phased approach for adopting <strong>AI-driven software development</strong> across the engineering organization. The goal is to make AI an integral part of the software development lifecycle (SDLC), enabling developers to deliver software faster while maintaining high standards of quality, security, and maintainability.</p>
+    <p>The approach focuses on people, process, and organizational knowledge—not just tooling.</p>
+    <hr>
+
+    <h1 id="vision">Vision</h1>
+    <p>Move from using AI as an occasional coding assistant to making it a trusted engineering partner throughout the software development lifecycle.</p>
+    <h3>Objectives</h3>
+    <ul>
+      <li>Every engineer has access to AI development tools.</li>
+      <li>AI becomes the default starting point for development tasks.</li>
+      <li>Organizational knowledge is captured and reusable by AI.</li>
+      <li>Developers remain responsible for architecture, quality, security, and correctness.</li>
+      <li>Continuous improvement is driven by measurable outcomes.</li>
+    </ul>
+    <hr>
+
+    <h1 id="guiding-principles">Guiding Principles</h1>
+    <ul>
+      <li>AI augments developers; it does not replace engineering judgment.</li>
+      <li>Developers own the final implementation.</li>
+      <li>Organizational knowledge should be reusable rather than tribal.</li>
+      <li>High-quality inputs produce high-quality AI outputs.</li>
+      <li>Every development activity should improve future AI capabilities.</li>
+      <li>Adoption should be measurable and continuously refined.</li>
+    </ul>
+    <hr>
+
+    <h1 id="phase-1">Phase 1 – Prepare the Team</h1>
+    <h2>Goal</h2>
+    <p>Establish the foundation for AI-driven development by ensuring every engineer understands how to effectively use AI tools within their daily workflow.</p>
+    <p>This phase focuses on developing the necessary skills, defining common practices, and creating a consistent AI-first development experience across the team.</p>
+
+    <h2>Activities</h2>
+    <h3>Provide AI Tool Access</h3>
+    <p>Ensure every team member has access to approved AI development tools, such as:</p>
+    <ul>
+      <li>Claude Code</li>
+      <li>Cursor</li>
+      <li>GitHub Copilot</li>
+      <li>Other approved AI development assistants</li>
+    </ul>
+
+    <h3>Deliver Training</h3>
+    <p>Training should include:</p>
+
+    <h4>Prompt Engineering</h4>
+    <ul>
+      <li>Writing effective prompts</li>
+      <li>Providing context</li>
+      <li>Iterative prompting</li>
+      <li>Task decomposition</li>
+      <li>Validation techniques</li>
+    </ul>
+
+    <h4>AI Development Tools</h4>
+    <ul>
+      <li>Claude Code</li>
+      <li>Cursor</li>
+      <li>Copilot</li>
+      <li>AI Skills</li>
+      <li>AI Rules</li>
+      <li>Development workflows</li>
+    </ul>
+
+    <h4>AI Agents</h4>
+    <ul>
+      <li>Agent-based development</li>
+      <li>Multi-agent workflows</li>
+      <li>Delegation strategies</li>
+      <li>Planning agents</li>
+    </ul>
+
+    <h4>Model Context Protocol (MCP)</h4>
+    <ul>
+      <li>Connecting AI to project resources</li>
+      <li>Context management</li>
+      <li>Tool integrations</li>
+      <li>Documentation retrieval</li>
+    </ul>
+
+    <h4>Harness Engineering &amp; Agent Orchestration</h4>
+    <ul>
+      <li>AI workflow orchestration</li>
+      <li>Task automation</li>
+      <li>Multi-agent coordination</li>
+      <li>Engineering pipelines</li>
+    </ul>
+
+    <h2>Expected Outcomes</h2>
+    <p>Every developer should be able to:</p>
+    <ul>
+      <li>Write effective prompts</li>
+      <li>Use AI throughout development</li>
+      <li>Understand AI limitations</li>
+      <li>Validate AI-generated code</li>
+      <li>Follow standardized AI workflows</li>
+      <li>Create reusable AI Skills</li>
+    </ul>
+    <hr>
+
+    <h1 id="phase-2">Phase 2 – Build Organizational and Project Knowledge</h1>
+    <h2>Goal</h2>
+    <p>Capture engineering knowledge so AI consistently generates solutions aligned with organizational standards.</p>
+    <p>Instead of relying on tribal knowledge, engineering expertise becomes reusable organizational assets.</p>
+
+    <h2>Activities</h2>
+    <p>Senior engineers identify and document:</p>
+
+    <h3>Architecture</h3>
+    <ul>
+      <li>System design decisions</li>
+      <li>Service boundaries</li>
+      <li>Integration patterns</li>
+      <li>Domain models</li>
+    </ul>
+
+    <h3>Coding Standards</h3>
+    <ul>
+      <li>Naming conventions</li>
+      <li>Error handling</li>
+      <li>Logging</li>
+      <li>Security requirements</li>
+      <li>Performance expectations</li>
+    </ul>
+
+    <h3>Development Patterns</h3>
+    <ul>
+      <li>Common implementation approaches</li>
+      <li>Frequently used components</li>
+      <li>API patterns</li>
+      <li>Testing patterns</li>
+    </ul>
+
+    <h3>Repetitive Engineering Tasks</h3>
+    <p>Examples:</p>
+    <ul>
+      <li>Creating endpoints</li>
+      <li>Repository implementations</li>
+      <li>Unit tests</li>
+      <li>Integration tests</li>
+      <li>DTO mappings</li>
+      <li>Documentation generation</li>
+    </ul>
+
+    <h3>Create Reusable AI Skills</h3>
+    <p>Convert organizational knowledge into reusable AI assets such as:</p>
+    <ul>
+      <li>Prompt templates</li>
+      <li>AI Skills</li>
+      <li>Coding rules</li>
+      <li>Project conventions</li>
+      <li>Implementation checklists</li>
+    </ul>
+
+    <h2>Expected Outcomes</h2>
+    <ul>
+      <li>Consistent AI-generated code</li>
+      <li>Faster onboarding</li>
+      <li>Reduced dependency on individual experts</li>
+      <li>Improved architectural consistency</li>
+    </ul>
+    <hr>
+
+    <h1 id="phase-3">Phase 3 – Improve Ticket Quality</h1>
+    <h2>Goal</h2>
+    <p>Provide AI with structured, complete, and consistent requirements.</p>
+    <p>AI performs significantly better when requirements are clear and unambiguous.</p>
+
+    <h2>Standard Ticket Template</h2>
+    <p>Each work item should include:</p>
+
+    <h3>Business Context</h3>
+    <p>Why is this feature needed?</p>
+
+    <h3>Functional Requirements</h3>
+    <p>What should the system do?</p>
+
+    <h3>Technical Constraints</h3>
+    <ul>
+      <li>Existing architecture</li>
+      <li>Libraries</li>
+      <li>APIs</li>
+      <li>Performance requirements</li>
+      <li>Security considerations</li>
+    </ul>
+
+    <h3>Acceptance Criteria</h3>
+    <p>Clearly measurable success conditions.</p>
+
+    <h3>Edge Cases</h3>
+    <p>Expected exception scenarios.</p>
+
+    <h3>Testing Requirements</h3>
+    <ul>
+      <li>Unit testing</li>
+      <li>Integration testing</li>
+      <li>Performance testing</li>
+      <li>Manual verification</li>
+    </ul>
+
+    <h3>References</h3>
+    <ul>
+      <li>Existing implementations</li>
+      <li>Design documents</li>
+      <li>API specifications</li>
+      <li>Architecture diagrams</li>
+    </ul>
+
+    <h2>Benefits</h2>
+    <ul>
+      <li>Less ambiguity</li>
+      <li>Reduced clarification cycles</li>
+      <li>Better AI-generated implementation</li>
+      <li>More predictable delivery</li>
+    </ul>
+    <hr>
+
+    <h1 id="phase-4">Phase 4 – AI-Assisted Delivery</h1>
+    <h2>Goal</h2>
+    <p>Integrate AI into every stage of software delivery.</p>
+    <p>AI should assist throughout implementation rather than being limited to code generation.</p>
+
+    <h2>AI-Assisted Development Workflow</h2>
+
+    <h3>Requirement Analysis</h3>
+    <p>AI helps developers understand requirements.</p>
+
+    <h3>Implementation Planning</h3>
+    <p>Generate implementation plans before coding begins.</p>
+
+    <h3>Code Generation</h3>
+    <p>Generate:</p>
+    <ul>
+      <li>Services</li>
+      <li>APIs</li>
+      <li>Business logic</li>
+      <li>Infrastructure code</li>
+    </ul>
+
+    <h3>Testing</h3>
+    <p>Generate:</p>
+    <ul>
+      <li>Unit tests</li>
+      <li>Integration tests</li>
+      <li>Test data</li>
+      <li>Mock objects</li>
+    </ul>
+
+    <h3>Documentation</h3>
+    <p>Generate:</p>
+    <ul>
+      <li>Technical documentation</li>
+      <li>API documentation</li>
+      <li>Change summaries</li>
+      <li>Release notes</li>
+    </ul>
+
+    <h3>Pull Requests</h3>
+    <p>Generate:</p>
+    <ul>
+      <li>PR descriptions</li>
+      <li>Testing summaries</li>
+      <li>Implementation explanations</li>
+    </ul>
+
+    <h2>Knowledge Capture</h2>
+    <p>Whenever additional context is required beyond the ticket:</p>
+    <ul>
+      <li>Document it.</li>
+      <li>Convert it into reusable documentation.</li>
+      <li>Create new AI Skills where appropriate.</li>
+    </ul>
+    <p>Each implementation should improve future implementations.</p>
+
+    <h2>Expected Outcomes</h2>
+    <ul>
+      <li>Faster implementation</li>
+      <li>Better documentation</li>
+      <li>Higher consistency</li>
+      <li>Improved developer productivity</li>
+    </ul>
+    <hr>
+
+    <h1 id="phase-5">Phase 5 – Code Review Evolution</h1>
+    <h2>Goal</h2>
+    <p>Evolve code reviews to account for AI-assisted development.</p>
+    <p>Reviewing AI-generated code requires more than validating syntax and correctness.</p>
+
+    <h2>Code Review Focus Areas</h2>
+
+    <h3>Code Quality</h3>
+    <ul>
+      <li>Correctness</li>
+      <li>Readability</li>
+      <li>Maintainability</li>
+    </ul>
+
+    <h3>Architecture</h3>
+    <ul>
+      <li>Compliance with architectural decisions</li>
+      <li>Proper abstractions</li>
+      <li>Reuse of existing patterns</li>
+    </ul>
+
+    <h3>Security</h3>
+    <ul>
+      <li>Authentication</li>
+      <li>Authorization</li>
+      <li>Input validation</li>
+      <li>Secure coding practices</li>
+    </ul>
+
+    <h3>Project Standards</h3>
+    <ul>
+      <li>Coding conventions</li>
+      <li>Naming standards</li>
+      <li>Error handling</li>
+      <li>Logging</li>
+    </ul>
+
+    <h3>AI Improvement Opportunities</h3>
+    <p>Reviewers should identify opportunities to:</p>
+    <ul>
+      <li>Improve AI Skills</li>
+      <li>Create new reusable Skills</li>
+      <li>Enhance documentation</li>
+      <li>Update engineering standards</li>
+    </ul>
+
+    <h2>Expected Outcomes</h2>
+    <p>Code reviews become a continuous improvement mechanism for both software and AI knowledge.</p>
+    <hr>
+
+    <h1 id="phase-6">Phase 6 – Measure Success</h1>
+    <h2>Goal</h2>
+    <p>Use measurable outcomes to evaluate AI adoption and continuously improve the development process.</p>
+
+    <h2>Key Metrics</h2>
+
+    <h3>AI Adoption</h3>
+    <ul>
+      <li>Percentage of developers using AI</li>
+      <li>Daily AI usage</li>
+      <li>AI-assisted development rate</li>
+    </ul>
+
+    <h3>Productivity</h3>
+    <ul>
+      <li>Lead time</li>
+      <li>Cycle time</li>
+      <li>Story completion rate</li>
+      <li>Time to first implementation</li>
+    </ul>
+
+    <h3>Quality</h3>
+    <ul>
+      <li>Defect rate</li>
+      <li>Production issues</li>
+      <li>Test coverage</li>
+      <li>Code review findings</li>
+    </ul>
+
+    <h3>Knowledge</h3>
+    <ul>
+      <li>AI Skill utilization</li>
+      <li>Documentation completeness</li>
+      <li>Knowledge reuse</li>
+    </ul>
+
+    <h3>Ticket Quality</h3>
+    <ul>
+      <li>Completeness score</li>
+      <li>Missing information</li>
+      <li>Clarification requests</li>
+    </ul>
+
+    <h2>Continuous Improvement</h2>
+    <p>Regularly review metrics to identify opportunities for:</p>
+    <ul>
+      <li>Additional training</li>
+      <li>Better documentation</li>
+      <li>New AI Skills</li>
+      <li>Improved engineering practices</li>
+      <li>Process refinements</li>
+    </ul>
+    <hr>
+
+    <h1 id="improvement-loop">Continuous Improvement Loop</h1>
+    <pre><code>Training
+      ↓
+Organizational Knowledge
+      ↓
+AI Skills &amp; Documentation
+      ↓
+High-Quality Tickets
+      ↓
+AI-Assisted Development
+      ↓
+Code Reviews
+      ↓
+Metrics &amp; Feedback
+      ↓
+Process Improvements
+      ↺</code></pre>
+    <p>Every project should contribute to improving future AI-assisted development.</p>
+    <hr>
+
+    <h1 id="benefits">Expected Benefits</h1>
+
+    <h2>Increased Productivity</h2>
+    <ul>
+      <li>Faster implementation</li>
+      <li>Reduced repetitive work</li>
+      <li>Accelerated onboarding</li>
+      <li>Shorter development cycles</li>
+    </ul>
+
+    <h2>Higher Quality</h2>
+    <ul>
+      <li>More consistent implementations</li>
+      <li>Better testing</li>
+      <li>Improved documentation</li>
+      <li>Reduced defects</li>
+    </ul>
+
+    <h2>Better Knowledge Sharing</h2>
+    <ul>
+      <li>Less tribal knowledge</li>
+      <li>Standardized engineering practices</li>
+      <li>Reusable organizational expertise</li>
+    </ul>
+
+    <h2>Continuous Learning</h2>
+    <ul>
+      <li>AI Skills improve over time</li>
+      <li>Documentation evolves with the project</li>
+      <li>Engineering knowledge becomes scalable</li>
+    </ul>
+    <hr>
+
+    <h1 id="risks">Risks and Mitigations</h1>
+    <table>
+      <thead>
+        <tr><th>Risk</th><th>Mitigation</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Over-reliance on AI</td><td>Developers remain accountable for final implementation</td></tr>
+        <tr><td>Poor AI output</td><td>Prompt engineering training and validation practices</td></tr>
+        <tr><td>Hallucinations</td><td>Human review and testing</td></tr>
+        <tr><td>Inconsistent implementations</td><td>Reusable AI Skills and coding standards</td></tr>
+        <tr><td>Missing organizational knowledge</td><td>Continuous documentation and Skill creation</td></tr>
+      </tbody>
+    </table>
+    <hr>
+
+    <h1 id="success-criteria">Success Criteria</h1>
+    <p>The adoption of AI-driven development can be considered successful when:</p>
+    <ul>
+      <li>Every engineer actively uses AI during development.</li>
+      <li>AI assists throughout the software development lifecycle.</li>
+      <li>Organizational knowledge is documented and reusable.</li>
+      <li>Tickets are consistently AI-ready.</li>
+      <li>Code reviews improve both software quality and AI capabilities.</li>
+      <li>Development productivity increases without compromising quality or security.</li>
+      <li>AI becomes a trusted engineering partner rather than an occasional coding assistant.</li>
+    </ul>
+    <hr>
+
+    <h1 id="conclusion">Conclusion</h1>
+    <p>AI-driven development is not about replacing software engineers. It is about enabling engineers to focus on solving complex business problems while AI accelerates repetitive and knowledge-intensive tasks.</p>
+    <p>By combining structured training, reusable organizational knowledge, high-quality requirements, AI-assisted delivery, evolved code reviews, and continuous measurement, organizations can establish a sustainable engineering practice where AI consistently enhances productivity, quality, and knowledge sharing across teams.</p>
+
+    <footer>
+      Generated from <code>index.md</code>.
+    </footer>
+  </main>
+</div>
+
+<script>
+  document.getElementById('tocToggle').addEventListener('click', function () {
+    var sidebar = document.getElementById('sidebar');
+    var open = sidebar.classList.toggle('open');
+    this.setAttribute('aria-expanded', open);
+  });
+</script>
+</body>
+</html>
